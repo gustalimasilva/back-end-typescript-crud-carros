@@ -70,7 +70,7 @@ export async function atualizarCarros(req: Request, res: Response) {
         ano,
         valor,
       })
-      .where({ id: Number(id) })
+      .where({ id: Number(id) });
 
     return res.status(204).json({ mensagem: "Carro Atualizado com sucesso" });
   } catch (error) {
@@ -78,4 +78,23 @@ export async function atualizarCarros(req: Request, res: Response) {
   }
 }
 
-export async function excluirCarros(req: Request, res: Response) {}
+export async function excluirCarros(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const carro = await knex<Carro>("carros")
+      .where({ id: Number(id) })
+      .first();
+
+    if (!carro) {
+      return res.status(404).json({ mensagem: "Carro não econtrado" });
+    }
+
+    await knex("carros")
+      .del()
+      .where({ id: Number(id) });
+
+    return res.status(200).json({ mensagem: "Carro deletado com sucesso" });
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+}

@@ -29,7 +29,25 @@ export async function detalharCarros(req: Request, res: Response) {
   }
 }
 
-export async function cadastrarCarros(req: Request, res: Response) {}
+export async function cadastrarCarros(req: Request, res: Response) {
+  const { marca, modelo, cor, ano, valor } = req.body;
+
+  try {
+    const carro = await knex<Omit<Carro, "id">>("carros")
+      .insert({
+        marca,
+        modelo,
+        cor,
+        ano,
+        valor,
+      })
+      .returning("*");
+
+    return res.status(201).json(carro[0]);
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+}
 
 export async function atualizarCarros(req: Request, res: Response) {}
 

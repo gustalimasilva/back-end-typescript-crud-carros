@@ -49,6 +49,33 @@ export async function cadastrarCarros(req: Request, res: Response) {
   }
 }
 
-export async function atualizarCarros(req: Request, res: Response) {}
+export async function atualizarCarros(req: Request, res: Response) {
+  const { marca, modelo, cor, ano, valor } = req.body;
+  const { id } = req.params;
+
+  try {
+    const carro = await knex<Carro>("carros")
+      .where({ id: Number(id) })
+      .first();
+
+    if (!carro) {
+      return res.status(404).json({ mensagem: "Carro não econtrado" });
+    }
+
+    await knex<Carro>("carros")
+      .update({
+        marca,
+        modelo,
+        cor,
+        ano,
+        valor,
+      })
+      .where({ id: Number(id) })
+
+    return res.status(204).json({ mensagem: "Carro Atualizado com sucesso" });
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+  }
+}
 
 export async function excluirCarros(req: Request, res: Response) {}
